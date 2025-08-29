@@ -9,31 +9,24 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-        PriorityQueue<Integer> plusPq = new PriorityQueue<>();
-        PriorityQueue<Integer> minusPq = new PriorityQueue<>();
+        // pq의 우선 순위 방법에 해당 문제 로직 구현
+        PriorityQueue<Integer> pq = new PriorityQueue<>((n1, n2) -> {
+            if (Math.abs(n1) == Math.abs(n2)) { return Integer.compare(n1, n2); }
+            else { return Integer.compare(Math.abs(n1), Math.abs(n2)); }
+        });
+
         int N = Integer.parseInt(br.readLine());
 
         for (int i = 0; i < N; i++) {
             int num = Integer.parseInt(br.readLine());
 
             if (num == 0) {
-                // 두 pq가 비어있는 경우 0 출력
-                if (plusPq.isEmpty() && minusPq.isEmpty()) {
-                    bw.write("0\n");
-                    continue;
-                }
-
-                if (plusPq.isEmpty()) { bw.write(-minusPq.poll() + "\n"); continue; }
-                if (minusPq.isEmpty()) { bw.write(plusPq.poll() + "\n"); continue; }
-
-                if (plusPq.peek() < minusPq.peek()) bw.write(plusPq.poll() + "\n");
-                else bw.write(-minusPq.poll() + "\n");
-
+                if (pq.isEmpty()) { bw.write("0\n"); }
+                else { bw.write(pq.poll() + "\n"); }
                 continue;
             }
 
-            if (num > 0) plusPq.add(num);
-            else minusPq.add(-num);
+            pq.offer(num);
         }
 
         bw.flush();
