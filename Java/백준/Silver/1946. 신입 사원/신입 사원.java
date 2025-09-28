@@ -15,19 +15,23 @@ public class Main {
         for (int i = 0; i < T; i++) {
 
             int N = Integer.parseInt(br.readLine());
-            HashMap<Integer, Integer> map = new HashMap<>();
+            int[] rank = new int[N+1];
+
+            int result = 1;
 
             for (int j = 0; j < N; j++) {
                 st = new StringTokenizer(br.readLine());
-                map.put(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
+                int idx = Integer.parseInt(st.nextToken());
+                int val = Integer.parseInt(st.nextToken());
+
+                rank[idx] = val;
             }
 
-            int minRank = map.get(1);
-            int result = 1;
+            int minNum = rank[1];
 
             for (int j = 2; j <= N; j++) {
-                if (map.get(j) < minRank) {
-                    minRank = map.get(j);
+                if (rank[j] < minNum) {
+                    minNum = rank[j];
                     result++;
                 }
             }
