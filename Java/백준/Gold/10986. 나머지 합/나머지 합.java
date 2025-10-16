@@ -13,7 +13,7 @@ public class Main {
 
         int N = readInt(), M = readInt();
         int[] preSum = new int[N+1];
-        int[] remain = new int[M];
+        long[] remain = new long[M];
 
         for (int i = 0; i < N; i++) {
             preSum[i+1] = (preSum[i] + readInt()) % M;
@@ -27,7 +27,7 @@ public class Main {
         // [ 0~i 누적합의 나머지 ], [ 0~j 누적합의 나머지가 ]가 같으면 (i+1 ~ j)의 누적합은 나머지가 0
         // 따라서 같은 나머지를 가지는 개수 n으로 nC2 조합 연산을 계속 더해주면 됨
         for (int i = 0; i < M; i++)
-            result += (long) remain[i] * (remain[i]-1) / 2;
+            result += remain[i] * (remain[i]-1) >> 1;
 
         System.out.println(result);
     }
