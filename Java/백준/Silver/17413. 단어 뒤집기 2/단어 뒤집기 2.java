@@ -1,10 +1,6 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.math.BigInteger;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class Main {
 
@@ -12,50 +8,53 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
+        Deque<Character> deque = new ArrayDeque<>();
+        boolean isReverse = true;
+
         int c;
-        boolean reverse = true;
-
-        Stack<Character> stack = new Stack<>();
-        Queue<Character> queue = new LinkedList<>();
-
         while ((c = System.in.read()) != '\n') {
 
-            if (c == '<') {
-                drainStack(stack);
-                reverse = false;
-                queue.offer((char) c);
-            } else if (c == '>') {
-                queue.offer((char) c);
-                reverse = true;
-                drainQueue(queue);
-            } else if (c == ' ') {
-                drainStack(stack);
-                drainQueue(queue);
-                sb.append(" ");
-            } else {
-                if (reverse) {
-                    stack.push((char) c);
-                } else {
-                    queue.offer((char) c);
+            if (!isReverse) {
+                deque.push((char) c);
+
+                if (c == '>') {
+                    drainQ(deque);
+                    isReverse = true;
                 }
+
+            } else {
+                if (c == ' ') {
+                    drainS(deque);
+                    sb.append(" ");
+                    continue;
+                }
+
+                if (c == '<') {
+                    drainS(deque);
+                    isReverse = false;
+                }
+                deque.push((char) c);
             }
         }
 
-        drainStack(stack);
-        drainQueue(queue);
+        if (isReverse) {
+            drainS(deque);
+        } else {
+            drainQ(deque);
+        }
 
-        System.out.println(sb);
+        System.out.println(sb.toString());
     }
 
-    public static void drainStack(Stack<Character> stack) {
-        while (!stack.isEmpty()) {
-            sb.append(stack.pop());
+    public static void drainQ(Deque<Character> deque) {
+        while (!deque.isEmpty()) {
+            sb.append(deque.pollLast());
         }
     }
 
-    public static void drainQueue(Queue<Character> queue) {
-        while (!queue.isEmpty()) {
-            sb.append(queue.poll());
+    public static void drainS(Deque<Character> deque) {
+        while (!deque.isEmpty()) {
+            sb.append(deque.pop());
         }
     }
 }
