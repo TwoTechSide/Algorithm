@@ -1,24 +1,9 @@
 import java.io.IOException;
 import java.util.*;
 
-class Node {
-    public char[] board;
-    public int pos;
-    public int cnt;
-
-    public Node(char[] board, int pos, int cnt) {
-        this.board = board;
-        this.pos = pos;
-        this.cnt = cnt;
-    }
-
-    @Override
-    public String toString() {
-        return new String(this.board);
-    }
-}
-
 public class Main {
+
+    public static final int[] POW10 = new int[] {1, 10, 100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000};
 
     public static int readInt() throws IOException {
         int c, n = System.in.read() & 15;
@@ -28,71 +13,68 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        char[] board = new char[9];
-        Node root = null;
+        int board = 0;
+        int zeroPos = 0;
 
         for (int i = 0; i < 9; i++) {
-            board[i] = (char) ('0' + readInt());
+            int num = readInt();
+            board += num * POW10[i];
 
-            if (board[i] == '0')
-                root = new Node(board, i, 0);
+            if (num == 0)
+                zeroPos = i;
         }
 
-        System.out.println(bfs(root));
-    }
+        Deque<int[]> deque = new LinkedList<>();
+        Set<Integer> isVisited = new HashSet<>();
 
-    public static int bfs(Node root) {
+        deque.add(new int[] {board, zeroPos, 0});
 
-        Map<String, Boolean> isVisited = new HashMap<>();
-        Queue<Node> queue = new LinkedList<>();
-        queue.add(root);
+        while(!deque.isEmpty()) {
 
-        while (!queue.isEmpty()) {
-            Node curNode = queue.poll();
+            int[] arr = deque.poll();
+            int curBoard = arr[0];
+            int curZeroPos = arr[1];
 
-            // 만약 정렬된 경우 return
-            if (curNode.toString().equals("123456780"))
-                return curNode.cnt;
-
-            // 방문 여부 적용
-            if (isVisited.containsKey(curNode.toString())) continue;
-            else isVisited.put(curNode.toString(), true);
-
-            char[] curBoard = curNode.board;
-            int curPos = curNode.pos;
-            int nextCnt = curNode.cnt + 1;
-
-            if (curPos > 2) {
-                swap(curBoard, curPos, curPos-3);
-                queue.add(new Node(Arrays.copyOf(curBoard, curBoard.length), curPos-3, nextCnt));
-                swap(curBoard, curPos, curPos-3);
+            if (curBoard == 87654321) {
+                System.out.println(arr[2]);
+                return;
             }
 
-            if (curPos < 6) {
-                swap(curBoard, curPos, curPos+3);
-                queue.add(new Node(Arrays.copyOf(curBoard, curBoard.length), curPos+3, nextCnt));
-                swap(curBoard, curPos, curPos+3);
+            if (isVisited.contains(curBoard))
+                continue;
+
+            isVisited.add(curBoard);
+            int nextZeroPos;
+
+            if (curZeroPos > 2) {
+                nextZeroPos = curZeroPos - 3;
+                deque.add(new int[] {swapBoard(curBoard, curZeroPos, nextZeroPos), nextZeroPos, arr[2]+1});
             }
 
-            if (curPos % 3 != 0) {
-                swap(curBoard, curPos, curPos-1);
-                queue.add(new Node(Arrays.copyOf(curBoard, curBoard.length), curPos-1, nextCnt));
-                swap(curBoard, curPos, curPos-1);
+            if (curZeroPos < 6) {
+                nextZeroPos = curZeroPos + 3;
+                deque.add(new int[] {swapBoard(curBoard, curZeroPos, nextZeroPos), nextZeroPos, arr[2]+1});
             }
 
-            if (curPos % 3 != 2) {
-                swap(curBoard, curPos, curPos+1);
-                queue.add(new Node(Arrays.copyOf(curBoard, curBoard.length), curPos+1, nextCnt));
-                swap(curBoard, curPos, curPos+1);
+            if (curZeroPos % 3 != 0) {
+                nextZeroPos = curZeroPos - 1;
+                deque.add(new int[] {swapBoard(curBoard, curZeroPos, nextZeroPos), nextZeroPos, arr[2]+1});
+            }
+
+            if (curZeroPos % 3 != 2) {
+                nextZeroPos = curZeroPos + 1;
+                deque.add(new int[] {swapBoard(curBoard, curZeroPos, nextZeroPos), nextZeroPos, arr[2]+1});
             }
         }
-
-        return -1;
+        
+        System.out.println(-1);
     }
 
-    public static void swap(char[] board, int curPos, int nextPos) {
-        board[curPos] ^= board[nextPos];
-        board[nextPos] ^= board[curPos];
-        board[curPos] ^= board[nextPos];
+    public static int swapBoard(int curBoard, int curZeroPos, int nextZeroPos) {
+        int beforeVal = curBoard / POW10[curZeroPos] % 10;
+        int afterVal = curBoard / POW10[nextZeroPos] % 10;
+
+        curBoard = curBoard - (beforeVal * POW10[curZeroPos]) - (afterVal * POW10[nextZeroPos]);
+        return curBoard + (afterVal * POW10[curZeroPos]) + (beforeVal * POW10[nextZeroPos]);
     }
 }
