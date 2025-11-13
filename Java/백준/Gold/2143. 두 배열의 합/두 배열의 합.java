@@ -1,8 +1,5 @@
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Main {
 
@@ -25,39 +22,34 @@ public class Main {
         int T = readInt();
 
         int aLen = readInt();
-        TreeMap<Integer, Integer> map = new TreeMap<>();
-        Deque<Integer> deque = new ArrayDeque<>();
+        int[] aArr = new int[aLen];
+        Map<Integer, Integer> map = new HashMap<>();
 
+        for (int i = 0; i < aLen; i++) aArr[i] = readInt();
+
+        // 누적합 aSum -> map 저장
         for (int i = 0; i < aLen; i++) {
-            int readNum = readInt();
+            int aSum = 0;
 
-            deque.addFirst(0);
-            int dequeSize = deque.size();
-
-            for (int j = 0; j < dequeSize; j++) {
-                int curNum = deque.removeFirst() + readNum;
-
-                map.merge(curNum, 1, Integer::sum);
-                deque.addLast(curNum);
+            for (int j = i; j < aLen; j++) {
+                aSum += aArr[j];
+                map.merge(aSum, 1, Integer::sum);
             }
         }
 
-        deque.clear();
-
         int bLen = readInt();
+        int[] bArr = new int[bLen];
         long result = 0;
 
+        for (int i = 0; i < bLen; i++) bArr[i] = readInt();
+
+        // 누적합 bSum -> map(T - bSum)의 결과 누적
         for (int i = 0; i < bLen; i++) {
-            int readNum = readInt();
+            int bSum = 0;
 
-            deque.addLast(0);
-            int dequeSize = deque.size();
-
-            for (int j = 0; j < dequeSize; j++) {
-                int curNum = deque.removeFirst() + readNum;
-
-                result += map.getOrDefault(T - curNum, 0);
-                deque.addLast(curNum);
+            for (int j = i; j < bLen; j++) {
+                bSum += bArr[j];
+                result += map.getOrDefault(T-bSum, 0);
             }
         }
 
