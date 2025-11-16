@@ -4,11 +4,6 @@ import java.util.PriorityQueue;
 
 public class Main {
 
-	public static int N;
-	public static boolean[][] paper;
-	public static int white = 0;
-	public static int blue = 0;
-
 	public static int readInt() throws IOException {
 		int c, n = System.in.read() & 15;
 		while ((c = System.in.read()) > 32) n = (n << 3) + (n << 1) + (c & 15);
@@ -18,31 +13,28 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
 		int N = readInt(), M = readInt();
-		PriorityQueue<Integer> trees = new PriorityQueue<>(Collections.reverseOrder());
-		trees.add(0);
+		int[] trees = new int[N];
 
-		for (int i = 0; i < N; i++)
-			trees.add(readInt());
+		long max = Long.MIN_VALUE;
+		long min = 0;
 
-
-		long treeCnt = 1;
-		long curTreeHeight = trees.poll();
-		long sum = 0;
-
-		while (true) {
-			long nextTreeHeight = trees.poll();
-			long need = M - sum;
-			long diff = curTreeHeight - nextTreeHeight;
-
-			// 다음 나무의 크기까지 잘라냈을 때 조건을 만족하는 경우
-			if (treeCnt * diff >= need) {
-				System.out.println(curTreeHeight - need / treeCnt - (need % treeCnt == 0 ? 0 : 1));
-				return;
-			}
-
-			sum += treeCnt * diff;
-			curTreeHeight = nextTreeHeight;
-			treeCnt++;
+		for (int i = 0; i < N; i++) {
+			if (max < (trees[i] = readInt()))
+				max = trees[i];
 		}
+
+		// 이진 탐색
+		while (min < max) {
+			long sum = 0;
+			long mid = (min + max) / 2;
+
+			for (int height: trees)
+				sum += Math.max(0, height - mid);
+
+			if (sum >= M) min = mid + 1;
+			else max = mid;
+		}
+
+		System.out.println(min-1);
     }
 }
