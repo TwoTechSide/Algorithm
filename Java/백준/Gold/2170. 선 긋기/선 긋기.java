@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.PriorityQueue;
 
 public class Main {
 
@@ -22,25 +23,20 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
 		int N = readInt();
-		int[][] arr = new int[N][2];
+		PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
 
-		for (int i = 0; i < N; i++) {
-			arr[i][0] = readInt();
-			arr[i][1] = readInt();
-		}
+		for (int i = 0; i < N; i++)
+			pq.add(new int[] {readInt(), readInt()});
 
-		Arrays.sort(arr, Comparator.comparingInt(o -> o[0]));
-
-		int prevStart = arr[0][0];
-		int prevEnd = arr[0][1];
+		int prevStart = pq.peek()[0];
+		int prevEnd = pq.poll()[1];
 		int nextStart;
 		int nextEnd;
 		int result = 0;
 
-		for (int i = 1; i < N; i++) {
-			int[] next = arr[i];
-			nextStart = next[0];
-			nextEnd = next[1];
+		while (!pq.isEmpty()) {
+			nextStart = pq.peek()[0];
+			nextEnd = pq.poll()[1];
 
 			if (nextStart <= prevEnd)
 				prevEnd = Math.max(prevEnd, nextEnd);
