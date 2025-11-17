@@ -1,8 +1,24 @@
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.PriorityQueue;
+import java.util.List;
+
+class Point implements Comparable<Point> {
+	int point;
+	int isEnd;
+
+	Point(int point, int isEnd) {
+		this.point = point;
+		this.isEnd = isEnd;
+	}
+
+	@Override
+	public int compareTo(Point o) {
+		if (this.point != o.point) return this.point - o.point;
+		else return o.isEnd - isEnd;	// 같은 위치인 경우, 끝점이 먼저 올 필요가 있음
+	}
+
+}
 
 public class Main {
 
@@ -20,26 +36,26 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
 		int N = readInt();
-		int[][] arr = new int[N][2];
+		List<Point> points = new ArrayList<>();
 
 		for (int i = 0; i < N; i++) {
-			arr[i][0] = readInt();
-			arr[i][1] = readInt();
+			points.add(new Point(readInt(), 0));
+			points.add(new Point(readInt(), 1));
 		}
 
-		Arrays.sort(arr, Comparator.comparingInt(o -> o[0]));
+		Collections.sort(points);
 
-		PriorityQueue<Integer> endPoints = new PriorityQueue<>();
+		int cnt = 0;
 		int maxCnt = 0;
 
-		for (int i = 0; i < N; i++) {
-
-			// 겹치지 않는 선분들 제거
-			while (!endPoints.isEmpty() && arr[i][0] >= endPoints.peek())
-				endPoints.poll();
-
-			endPoints.add(arr[i][1]);
-			maxCnt = Math.max(maxCnt, endPoints.size());
+		for (Point p : points) {
+			// 시작점이면 +1, 끝점이면 -1
+			if (p.isEnd == 0) {
+				cnt++;
+				maxCnt = Math.max(maxCnt, cnt);
+			} else {
+				cnt--;
+			}
 		}
 
 		System.out.println(maxCnt);
