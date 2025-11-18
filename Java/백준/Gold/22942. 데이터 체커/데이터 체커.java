@@ -4,27 +4,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import java.util.PriorityQueue;
+
+class CircleLine implements Comparable<CircleLine> {
+	int left;
+	int right;
+
+	public CircleLine(int left, int right) {
+		this.left = left;
+		this.right = right;
+	}
+
+	@Override
+	public int compareTo(CircleLine o) {
+		return Integer.compare(this.left, o.left);
+	}
+}
 
 public class Main {
-
-	static class Point implements Comparable<Point> {
-		int x;
-		int index;
-		boolean isOpen;
-
-		public Point(int x, int index, boolean isOpen) {
-			this.x = x;
-			this.index = index;
-			this.isOpen = isOpen;
-		}
-
-		@Override
-		public int compareTo(Point o) {
-			if (this.x != o.x) return Integer.compare(this.x, o.x);
-			return Boolean.compare(o.isOpen, this.isOpen);
-		}
-
-	}
 
 	public static int readInt() throws IOException {
 		int c = System.in.read();
@@ -37,33 +34,41 @@ public class Main {
 		return neg ? -n : n;
 	}
 
-    public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException {
 		int N = readInt();
-		List<Point> points = new ArrayList<>();
+		List<CircleLine> circleLines = new ArrayList<>();
 
 		for (int i = 0; i < N; i++) {
 			int pos = readInt();
-			int rad = readInt();
-			points.add(new Point(pos-rad, i, true));
-			points.add(new Point(pos+rad, i, false));
+			int len = readInt();
+			circleLines.add(new CircleLine(pos-len, pos+len));
 		}
 
-		Collections.sort(points);
+		Collections.sort(circleLines);
 
-		Deque<Integer> stack = new ArrayDeque<>();
+		Deque<CircleLine> deque = new ArrayDeque<>();
+		deque.push(circleLines.get(0));
 
-		for (Point p : points) {
-			if (p.isOpen) {
-				stack.push(p.index);
-			} else {
-				if (stack.isEmpty() || stack.peek() != p.index) {
+		for (int i = 1; i < circleLines.size(); i++) {
+			CircleLine nc = circleLines.get(i);
+
+			// 불필요한 선분 제거
+			while (!deque.isEmpty() && deque.peek().right < nc.left)
+				deque.pop();
+
+			// 남아있는 바로 아랫 선분과 비교하여 조건 확인
+			if (!deque.isEmpty()) {
+				CircleLine pc = deque.peek();
+
+				if (pc.left == nc.left || (pc.right >= nc.left && pc.right <= nc.right)) {
 					System.out.println("NO");
 					return;
 				}
-				stack.pop();
 			}
+
+			deque.push(nc);
 		}
 
 		System.out.println("YES");
-    }
+	}
 }
