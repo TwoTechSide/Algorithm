@@ -1,11 +1,20 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedHashMap;
+import java.util.Comparator;
 import java.util.PriorityQueue;
-import java.util.TreeMap;
 
 public class Main {
+
+	public static class Node {
+		int value;
+		boolean removed;
+
+		public Node(int value) {
+			this.value = value;
+			this.removed = false;
+		}
+	}
 
 	public static void main(String[] args) throws IOException {
 
@@ -16,40 +25,42 @@ public class Main {
 
 		while (T-- > 0) {
 			int N = Integer.parseInt(br.readLine());
-			TreeMap<Integer, Integer> map = new TreeMap<>();
+			PriorityQueue<Node> pq1 = new PriorityQueue<>((o1, o2) -> Integer.compare(o2.value, o1.value));
+			PriorityQueue<Node> pq2 = new PriorityQueue<>((o1, o2) -> Integer.compare(o1.value, o2.value));
 
 			while (N-- > 0) {
 				String[] input = br.readLine().split(" ");
 				String command = input[0];
 				int num = Integer.parseInt(input[1]);
 
-				if (command.equals("I"))
-					map.merge(num, 1, Integer::sum);
+				if (command.equals("I")) {
+					Node node = new Node(num);
+					pq1.offer(node);
+					pq2.offer(node);
+				}
 
 				else if (command.equals("D")) {
-					int key;
 
-					if (map.isEmpty())
+					if (pq1.isEmpty() && pq2.isEmpty())
 						continue;
 
-					if (num == -1) {
-						key = map.firstKey();
-						map.merge(key, -1, Integer::sum);
-
+					if (num == 1) {
+						while (!pq1.isEmpty() && pq1.peek().removed) pq1.poll();
+						if (!pq1.isEmpty()) pq1.poll().removed = true;
 					} else {
-						key = map.lastKey();
-						map.merge(key, -1, Integer::sum);
+						while (!pq2.isEmpty() && pq2.peek().removed) pq2.poll();
+						if (!pq2.isEmpty()) pq2.poll().removed = true;
 					}
-
-					if (map.get(key) == 0)
-						map.remove(key);
 				}
 			}
 
-			if (map.isEmpty()) {
+			while (!pq1.isEmpty() && pq1.peek().removed) pq1.poll();
+			while (!pq2.isEmpty() && pq2.peek().removed) pq2.poll();
+
+			if (pq1.isEmpty() || pq2.isEmpty()) {
 				sb.append("EMPTY\n");
 			} else {
-				sb.append(map.lastKey()).append(" ").append(map.firstKey()).append("\n");
+				sb.append(pq1.peek().value).append(" ").append(pq2.peek().value).append("\n");
 			}
 		}
 
