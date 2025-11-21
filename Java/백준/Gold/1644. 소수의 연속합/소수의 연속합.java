@@ -1,15 +1,14 @@
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
 
 	public static boolean isPrime(int num) {
+
 		int i = 2;
 
 		while (i * i <= num) {
-			if (num % i == 0)
-				return false;
+			if (num % i == 0) return false;
 			i++;
 		}
 
@@ -17,11 +16,16 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws IOException {
+
 		int N = readInt();
 
-		List<Integer> primes = new ArrayList<>();
+		int[] primes = new int[N+1];
+		int index = 0;
+
 		for (int i = 2; i <= N; i++) {
-			if (isPrime(i)) primes.add(i);
+			if (isPrime(i)) {
+				primes[index++] = i;
+			}
 		}
 
 		// 투 포인터로 풀이
@@ -29,16 +33,16 @@ public class Main {
 		int sum = 0;
 		int count = 0;
 
-		while (left <= right) {
+		while (true) {
 			if (sum >= N) {
 				if (sum == N) count++;
-				sum -= primes.get(left++);
+				sum -= primes[left++];
 			} else {
-				if (right == primes.size()) break;
-				sum += primes.get(right++);
+				if (right == index) break;
+				sum += primes[right++];
 			}
 		}
-		
+
 		System.out.println(count);
 	}
 
