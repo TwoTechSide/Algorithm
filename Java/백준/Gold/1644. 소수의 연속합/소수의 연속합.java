@@ -1,29 +1,24 @@
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class Main {
-
-	public static boolean isPrime(int num) {
-
-		int i = 2;
-
-		while (i * i <= num) {
-			if (num % i == 0) return false;
-			i++;
-		}
-
-		return true;
-	}
 
 	public static void main(String[] args) throws IOException {
 
 		int N = readInt();
 
+		// 아리스토텔레스의 체로 소수 판별 -> 소수가 여러 개 필요한 상황에서는 이 방법이 for문으로 소수 판별하는 것보다 훨씬 더 빠름
+		boolean[] isNotPrimes = new boolean[N+1];
+		for (int i = 4; i <= N; i += 2) isNotPrimes[i] = true;
+		for (int i = 3; i <= N; i += 2) {
+			if (isNotPrimes[i]) continue;
+			for (long j = (long) i*i; j <= N; j += 2L*i) isNotPrimes[(int) j] = true;
+		}
+
 		int[] primes = new int[N+1];
 		int index = 0;
 
 		for (int i = 2; i <= N; i++) {
-			if (isPrime(i)) {
+			if (!isNotPrimes[i]) {
 				primes[index++] = i;
 			}
 		}
